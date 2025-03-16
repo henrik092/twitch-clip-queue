@@ -1,4 +1,4 @@
-import { Title, List, ThemeIcon, Code, Box } from "@mantine/core";
+import { Title, List, ThemeIcon, Code, Box } from '@mantine/core';
 import { CircleCheck } from 'tabler-icons-react';
 
 function FeaturesSection() {
@@ -15,7 +15,9 @@ function FeaturesSection() {
         }
       >
         <List.Item>
-          <strong>Supports Twitch clip, Twitch VOD, YouTube and Streamable video links</strong>
+          <strong>
+            Supports Twitch Clips, Kick Clips, Afreeca Clips, Twitch VODs, YouTube and Streamable video links.
+          </strong>
         </List.Item>
         <List.Item>
           <strong>Integrates with Twitch chat</strong>
