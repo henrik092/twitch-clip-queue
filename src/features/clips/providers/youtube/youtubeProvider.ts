@@ -28,10 +28,10 @@ class YoutubeProvider implements ClipProvider {
     const startTime = uri.searchParams.get('t') ?? undefined;
 
     if (startTime) {
-      const chunks = startTime.split(/([hms])/).filter(chunk => chunk !== '');
-      const magnitudes = chunks.filter(chunk => chunk.match(/[0-9]+/)).map(chunk => parseInt(chunk));
+      const chunks = startTime.split(/([hms])/).filter((chunk) => chunk !== '');
+      const magnitudes = chunks.filter((chunk) => chunk.match(/[0-9]+/)).map((chunk) => parseInt(chunk));
       const UNITS = ['h', 'm', 's'];
-      const seenUnits = chunks.filter(chunk => UNITS.includes(chunk));
+      const seenUnits = chunks.filter((chunk) => UNITS.includes(chunk));
 
       if (chunks.length === 1) {
         return `${id};${chunks[0]}`;

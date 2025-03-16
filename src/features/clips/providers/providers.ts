@@ -5,7 +5,7 @@ import streamableProvider from './streamable/streamableProvider';
 import twitchClipProvider from './twitchClip/twitchClipProvider';
 import twitchVodProvider from './twitchVod/twitchVodProvider';
 import youtubeProvider from './youtube/youtubeProvider';
-
+import kickClipProvider from './kickClip/kickClipProvider';
 const logger = createLogger('CombinedClipProvider');
 
 export interface ClipProvider {
@@ -25,6 +25,7 @@ class CombinedClipProvider implements ClipProvider {
     [youtubeProvider.name]: youtubeProvider,
     [streamableProvider.name]: streamableProvider,
     [afreecaClipProvider.name]: afreecaClipProvider,
+    [kickClipProvider.name]: kickClipProvider,
   };
   enabledProviders: string[] = [];
 
