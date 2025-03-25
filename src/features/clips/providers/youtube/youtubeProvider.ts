@@ -76,6 +76,7 @@ class YoutubeProvider implements ClipProvider {
       author: clipInfo.author_name,
       thumbnailUrl: clipInfo.thumbnail_url,
       submitters: [],
+      Platform: 'YouTube',
     };
   }
 

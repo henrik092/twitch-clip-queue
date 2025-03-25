@@ -5,7 +5,7 @@ import type { RootState } from '../../app/store';
 import { legacyDataMigrated } from '../migration/legacyMigration';
 import { settingsChanged } from '../settings/settingsSlice';
 import { userTimedOut } from '../twitchChat/actions';
-
+import type { PlatformType } from '../../common/utils';
 export interface Clip {
   id: string;
   submitters: string[];
@@ -18,6 +18,7 @@ export interface Clip {
   createdAt?: string;
   category?: string;
   url?: string;
+  Platform?: PlatformType;
 
   thumbnailUrl?: string;
 }

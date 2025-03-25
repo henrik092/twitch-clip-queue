@@ -1,7 +1,6 @@
 import afreecaApi from '../../../../common/apis/afreecaApi';
 import type { Clip } from '../../clipQueueSlice';
 import type { ClipProvider } from '../providers';
-
 class AfreecaClipProvider implements ClipProvider {
   name = 'afreeca-clip';
 
@@ -36,6 +35,7 @@ class AfreecaClipProvider implements ClipProvider {
       author: clipInfo?.author_name ?? 'afreeca',
       thumbnailUrl: clipInfo?.thumbnail_url,
       submitters: [],
+      Platform: 'Afreeca',
     };
   }
 

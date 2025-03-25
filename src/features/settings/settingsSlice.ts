@@ -10,11 +10,13 @@ interface SettingsState {
   colorScheme: ColorScheme | null;
   channel?: string;
   commandPrefix: string;
+  volume: number;
 }
 
 const initialState: SettingsState = {
   colorScheme: null,
   commandPrefix: '!queue',
+  volume: 1,
 };
 
 const settingsSlice = createSlice({
@@ -37,6 +39,9 @@ const settingsSlice = createSlice({
       if (payload.commandPrefix) {
         state.commandPrefix = payload.commandPrefix;
       }
+    },
+    setVolume: (state, action) => {
+      state.volume = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -72,4 +77,6 @@ const settingsReducer = persistReducer(
   },
   settingsSlice.reducer
 );
+
+export const { setVolume } = settingsSlice.actions;
 export default settingsReducer;

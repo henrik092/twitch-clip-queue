@@ -1,7 +1,7 @@
 import { PropsWithChildren } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
+import { selectQueueIds, currentClipReplaced, queueClipRemoved, selectClipById } from '../clipQueueSlice';
 import Clip from '../Clip';
-import { selectQueueIds, currentClipReplaced, queueClipRemoved } from '../clipQueueSlice';
 
 interface QueueProps {
   card?: boolean;
@@ -12,17 +12,21 @@ function Queue({ wrapper, card }: QueueProps) {
   const dispatch = useAppDispatch();
   const clipQueueIds = useAppSelector(selectQueueIds);
   const Wrapper = wrapper ?? (({ children }) => <>{children}</>);
+  const clips = useAppSelector((state) =>
+    clipQueueIds.map((id) => selectClipById(id)(state)).filter((clip) => clip !== undefined)
+  );
 
   return (
     <>
-      {clipQueueIds.map((id) => (
-        <Wrapper key={id}>
+      {clips.map((clip) => (
+        <Wrapper key={clip!.id}>
           <Clip
-            key={id}
-            clipId={id}
+            platform={clip!.Platform || undefined}
+            key={clip!.id}
+            clipId={clip!.id}
             card={card}
-            onClick={() => dispatch(currentClipReplaced(id))}
-            onCrossClick={() => dispatch(queueClipRemoved(id))}
+            onClick={() => dispatch(currentClipReplaced(clip!.id))}
+            onCrossClick={() => dispatch(queueClipRemoved(clip!.id))}
           />
         </Wrapper>
       ))}

@@ -36,6 +36,7 @@ class StreamableProvider implements ClipProvider {
       author: clipInfo?.author_name ?? 'Streamable',
       thumbnailUrl: clipInfo?.thumbnail_url,
       submitters: [],
+      Platform: 'Streamable',
     };
   }
 

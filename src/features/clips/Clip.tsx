@@ -3,10 +3,12 @@ import { MouseEventHandler } from 'react';
 import { Trash } from 'tabler-icons-react';
 import { useAppSelector } from '../../app/hooks';
 import { selectClipById } from './clipQueueSlice';
+import type { PlatformType } from '../../common/utils';
+import Platform from '../../common/components/BrandPlatforms';
 
 interface ClipProps {
   clipId: string;
-
+  platform: PlatformType;
   onClick?: MouseEventHandler<HTMLDivElement>;
   onCrossClick?: MouseEventHandler<HTMLButtonElement>;
 
@@ -14,7 +16,7 @@ interface ClipProps {
   card?: boolean;
 }
 
-function Clip({ clipId, onClick, onCrossClick, className, card }: ClipProps) {
+function Clip({ clipId, onClick, onCrossClick, className, card, platform }: ClipProps) {
   const { title, thumbnailUrl = '', author, submitters } = useAppSelector(selectClipById(clipId));
 
   return (
@@ -61,18 +63,20 @@ function Clip({ clipId, onClick, onCrossClick, className, card }: ClipProps) {
         </AspectRatio>
         <Stack spacing={0} align="flex-start" sx={{ width: '100%' }}>
           <Skeleton visible={!title}>
-            <Text
-              className="clip--title"
-              weight="700"
-              size="sm"
-              lineClamp={2}
-              title={title}
-            >
+            <Text className="clip--title" weight="700" size="sm" lineClamp={2} title={title}>
               {title}&nbsp;
             </Text>
           </Skeleton>
           <Skeleton visible={!author} height="xs">
-            <Text size="xs" weight="700" color="dimmed" lineClamp={1} title={author}>
+            <Text
+              sx={{ display: 'flex', alignItems: 'center', gap: '.25rem' }}
+              size="xs"
+              weight="700"
+              color="dimmed"
+              lineClamp={1}
+              title={author}
+            >
+              <Platform platform={platform} />
               {author}&nbsp;
             </Text>
           </Skeleton>

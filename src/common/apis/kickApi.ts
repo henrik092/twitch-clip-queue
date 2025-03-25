@@ -14,8 +14,18 @@ export async function getClip(id: string): Promise<KickClip | undefined> {
   }
 }
 
+export async function getDirectUrl(id: string): Promise<string | undefined> {
+  const clip = await getClip(id);
+  if (!clip || !clip.video_url) {
+    console.error('Invalid clip or missing playback URL');
+    return;
+  }
+  return clip.video_url;
+}
+
 const kickApi = {
   getClip,
+  getDirectUrl,
 };
 
 export default kickApi;

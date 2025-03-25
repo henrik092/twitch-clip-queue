@@ -42,22 +42,32 @@ function Player({ className }: PlayerProps) {
   if (currentClip) {
     const isKickClip = currentClip.id.includes('clip_');
     if (autoplayEnabled) {
-      if (autoplayUrl && ReactPlayer.canPlay(autoplayUrl)) {
-        player = (
-          <ReactPlayer
-            key={currentClip.id}
-            playing
-            controls
-            url={videoSrc}
-            width="100%"
-            height="100%"
-            style={{
-              maxHeight: '100%',
-              maxWidth: '100%',
-            }}
-            onEnded={() => nextClipId && dispatch(autoplayTimeoutHandleChanged({ set: true }))}
-          />
-        );
+      if ((autoplayUrl && ReactPlayer.canPlay(autoplayUrl)) || isKickClip) {
+        if (isKickClip) {
+          player = (
+            <VideoPlayer
+              key={currentClip.id}
+              src={currentClip.url}
+              onEnded={() => nextClipId && dispatch(autoplayTimeoutHandleChanged({ set: true }))}
+            />
+          );
+        } else {
+          player = (
+            <ReactPlayer
+              key={`${currentClip.id}-${videoSrc}`}
+              playing
+              controls
+              url={videoSrc}
+              width="100%"
+              height="100%"
+              style={{
+                maxHeight: '100%',
+                maxWidth: '100%',
+              }}
+              onEnded={() => nextClipId && dispatch(autoplayTimeoutHandleChanged({ set: true }))}
+            />
+          );
+        }
       }
     }
 

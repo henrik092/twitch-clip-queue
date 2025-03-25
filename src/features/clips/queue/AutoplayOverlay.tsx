@@ -2,8 +2,8 @@ import { Button, Center, RingProgress, LoadingOverlay, Stack, Text } from '@mant
 import { useInterval } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
 import { useAppSelector } from '../../../app/hooks';
+import { selectAutoplayDelay, selectNextId, selectQueueIds, selectClipById } from '../clipQueueSlice';
 import Clip from '../Clip';
-import { selectAutoplayDelay, selectNextId } from '../clipQueueSlice';
 
 interface AutoplayOverlayProps {
   visible: boolean;
@@ -16,24 +16,32 @@ function AutoplayOverlay({ visible, onCancel }: AutoplayOverlayProps) {
   const overlayOn = visible && !!nextClipId;
 
   const intervalTime = 100;
-  const step = (100 / (delay / intervalTime - 1));
+  const step = 100 / (delay / intervalTime - 1);
 
   const [progress, setProgress] = useState(0);
   const interval = useInterval(() => setProgress((p) => p + step), intervalTime);
 
+  const clipQueueIds = useAppSelector(selectQueueIds);
+  const clips = useAppSelector((state) =>
+    clipQueueIds.map((id) => selectClipById(id)(state)).filter((clip) => clip !== undefined)
+  );
+  const nextClip = clips.find((clip) => clip!.id === nextClipId);
+
   useEffect(() => {
     if (overlayOn) {
+      interval.stop();
       interval.start();
-      return interval.stop;
     } else {
       setProgress(0);
+      interval.stop();
     }
-  }, [overlayOn, interval]);
+    return () => interval.stop();
+    // eslint-disable-next-line
+  }, [overlayOn]);
 
   if (!overlayOn) {
     return <></>;
   }
-
   return (
     <LoadingOverlay
       visible={true}
@@ -59,7 +67,7 @@ function AutoplayOverlay({ visible, onCancel }: AutoplayOverlayProps) {
           <Text size="lg" weight={700}>
             Next up
           </Text>
-          <Clip clipId={nextClipId} />
+          <Clip platform={nextClip?.Platform || undefined} clipId={nextClipId} />
         </Stack>
       }
     />

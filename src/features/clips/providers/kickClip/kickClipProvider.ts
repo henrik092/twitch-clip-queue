@@ -43,6 +43,7 @@ class KickClipProvider implements ClipProvider {
       createdAt: clipInfo.created_at,
       thumbnailUrl: clipInfo.thumbnail_url.replace('%{width}x%{height}', '480x272'),
       submitters: [],
+      Platform: 'Kick',
     };
   }
 
@@ -53,9 +54,8 @@ class KickClipProvider implements ClipProvider {
   getEmbedUrl(id: string): string | undefined {
     return this.getUrl(id);
   }
-
   async getAutoplayUrl(id: string): Promise<string | undefined> {
-    return this.getUrl(id);
+    return await kickApi.getDirectUrl(id);
   }
 }
 
