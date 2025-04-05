@@ -1,22 +1,59 @@
 import { Stack } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
-import AutoplayOverlay from './AutoplayOverlay';
-import VideoPlayer from './VideoPlayer';
+import type { Clip } from '../clipQueueSlice';
 import {
   autoplayTimeoutHandleChanged,
   selectAutoplayEnabled,
   selectAutoplayTimeoutHandle,
-  selectAutoplayUrl,
   selectCurrentClip,
   selectNextId,
 } from '../clipQueueSlice';
-import ReactPlayer from 'react-player/lazy';
 import clipProvider from '../providers/providers';
-
+import AutoplayOverlay from './AutoplayOverlay';
+import VideoPlayer from './VideoPlayer';
 interface PlayerProps {
   className?: string;
 }
+
+const getPlayerComponent = (
+  currentClip: Clip | undefined,
+  videoSrc: string | undefined,
+  autoplayEnabled: boolean,
+  nextClipId: string | undefined,
+  dispatch: ReturnType<typeof useAppDispatch>
+) => {
+  if (!currentClip) return null;
+
+  const KickClip = currentClip.Platform === 'Kick';
+
+  if (autoplayEnabled && currentClip.id) {
+    return (
+      <VideoPlayer
+        key={`${currentClip.id}-${videoSrc}`}
+        src={videoSrc}
+        onEnded={() => nextClipId && dispatch(autoplayTimeoutHandleChanged({ set: true }))}
+      />
+    );
+  }
+
+  if (KickClip) {
+    return <VideoPlayer key={currentClip.id} src={currentClip.url} />;
+  }
+
+  const embedUrl = clipProvider.getEmbedUrl(currentClip.id);
+  return (
+    <iframe
+      key={currentClip.id}
+      src={embedUrl}
+      title={currentClip.title}
+      style={{ height: '100%', width: '100%' }}
+      frameBorder="0"
+      allow="autoplay"
+      allowFullScreen
+    />
+  );
+};
 
 function Player({ className }: PlayerProps) {
   const dispatch = useAppDispatch();
@@ -24,7 +61,6 @@ function Player({ className }: PlayerProps) {
   const nextClipId = useAppSelector(selectNextId);
   const autoplayEnabled = useAppSelector(selectAutoplayEnabled);
   const autoplayTimeoutHandle = useAppSelector(selectAutoplayTimeoutHandle);
-  const autoplayUrl = useAppSelector(selectAutoplayUrl);
   const [videoSrc, setVideoSrc] = useState<string | undefined>(undefined);
 
   useEffect(() => {
@@ -38,58 +74,7 @@ function Player({ className }: PlayerProps) {
     fetchVideoUrl();
   }, [currentClip]);
 
-  let player = undefined;
-  if (currentClip) {
-    const isKickClip = currentClip.id.includes('clip_');
-    if (autoplayEnabled) {
-      if ((autoplayUrl && ReactPlayer.canPlay(autoplayUrl)) || isKickClip) {
-        if (isKickClip) {
-          player = (
-            <VideoPlayer
-              key={currentClip.id}
-              src={currentClip.url}
-              onEnded={() => nextClipId && dispatch(autoplayTimeoutHandleChanged({ set: true }))}
-            />
-          );
-        } else {
-          player = (
-            <ReactPlayer
-              key={`${currentClip.id}-${videoSrc}`}
-              playing
-              controls
-              url={videoSrc}
-              width="100%"
-              height="100%"
-              style={{
-                maxHeight: '100%',
-                maxWidth: '100%',
-              }}
-              onEnded={() => nextClipId && dispatch(autoplayTimeoutHandleChanged({ set: true }))}
-            />
-          );
-        }
-      }
-    }
-
-    if (!player) {
-      if (isKickClip) {
-        player = <VideoPlayer key={currentClip.id} src={currentClip.url} />;
-      } else {
-        const embedUrl = clipProvider.getEmbedUrl(currentClip.id);
-        player = (
-          <iframe
-            key={currentClip.id}
-            src={embedUrl}
-            title={currentClip.title}
-            style={{ height: '100%', width: '100%' }}
-            frameBorder="0"
-            allow="autoplay"
-            allowFullScreen
-          ></iframe>
-        );
-      }
-    }
-  }
+  const player = getPlayerComponent(currentClip, videoSrc, autoplayEnabled, nextClipId, dispatch);
 
   return (
     <Stack
